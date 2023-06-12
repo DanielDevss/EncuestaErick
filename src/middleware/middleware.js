@@ -17,12 +17,18 @@ middlewares.verifyAuth = (req,res,next) => {
 
     db.query(`SELECT * FROM usuarios WHERE id_usuario = "${decode}"`, (err,user) => {
         if(err) throw err
+        const isAdmin = user[0].admin.readInt8(0) === 1
+
+        console.log(isAdmin)
         if(user.length == 0){
             res.redirect('/login')
             return
         }
-        
-        next()
+        if(isAdmin){
+            res.redirect('/usuarios')
+        }else{
+            next()
+        }
     })
 }
 
@@ -34,16 +40,22 @@ middlewares.verifyAdmin = (req,res,next) => {
     }
 
     const decode = jwt.decode(token, process.env.JWT_SECRET)
-    db.query(`SELECT * FROM usuarios id_usuario = "${decode}"`, (err,user) => {
+    db.query(`SELECT * FROM usuarios WHERE id_usuario = "${decode}"`, (err,user) => {
         if(err) throw err
         if(user.length == 0){
             res.redirect('/login')
             return
         }
-        if(user[0].admin == 1){
+
+        const isAdmin = user[0].admin.readInt8(0) === 1
+
+        console.log(isAdmin)
+
+        if(isAdmin){
             next()
+        }else{
+            res.redirect('/')
         }
-        res.redirect('/login')
     })
 }
 

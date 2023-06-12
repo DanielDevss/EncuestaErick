@@ -157,9 +157,10 @@ controllers.logout = (req,res) => {
 //LINK - REGISTRO
 controllers.register = (req,res) => {
     res.render('register', {
-        title   :   '¡Registrate! es gratis'
+        title   :   '¡Registrate! es gratis',
     })
 }
+
 
 controllers.uploadRegister = (req,res) => {
     const body = req.body
@@ -168,7 +169,7 @@ controllers.uploadRegister = (req,res) => {
     bcrypt.hash(clave,10, (err,hash) => {
         if(err) throw err
         body.clave = hash
-        console.log(hash)
+        body.admin = false
         db.query(`INSERT INTO usuarios SET ? `, [body], (Err, result) => {
             if(Err) {
                 console.error(err)
